@@ -1,8 +1,7 @@
-const urljoin = require("url-join")
 const siteConfig = require("./siteConfig")
 
 module.exports = {
-  //siteMetadata: {
+  siteMetadata: {
     //title: `Gatsby Starter Blog`,
     //author: `Kyle Mathews`,
     //description: `A starter blog demonstrating what Gatsby can do.`,
@@ -10,11 +9,10 @@ module.exports = {
     //social: {
       //twitter: `kylemathews`,
     //},
-  siteMetadata: {
     title: siteConfig.name,
     author: siteConfig.author,
     description: siteConfig.description,
-    siteUrl: urljoin(siteConfig.url, siteConfig.prefix),
+    siteUrl: `https://access.today`,
     social: {
       twitter: siteConfig.twitter,
     },
