@@ -1,20 +1,11 @@
-const siteConfig = require("./siteConfig")
-
 module.exports = {
   siteMetadata: {
-    //title: `Gatsby Starter Blog`,
-    //author: `Kyle Mathews`,
-    //description: `A starter blog demonstrating what Gatsby can do.`,
-    //siteUrl: `https://gatsby-starter-blog-demo.netlify.com/`,
-    //social: {
-      //twitter: `kylemathews`,
-    //},
-    title: siteConfig.name,
-    author: siteConfig.author,
-    description: siteConfig.description,
-    siteUrl: `https://access.today`,
+    title: `Gatsby Starter Blog`,
+    author: `Kyle Mathews`,
+    description: `A starter blog demonstrating what Gatsby can do.`,
+    siteUrl: `https://gatsby-starter-blog-demo.netlify.com/`,
     social: {
-      twitter: siteConfig.twitter,
+      twitter: `kylemathews`,
     },
   },
   plugins: [
