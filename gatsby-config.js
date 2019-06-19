@@ -1,11 +1,22 @@
+const urljoin = require("url-join")
+const siteConfig = require("./siteConfig")
+
 module.exports = {
+  //siteMetadata: {
+    //title: `Gatsby Starter Blog`,
+    //author: `Kyle Mathews`,
+    //description: `A starter blog demonstrating what Gatsby can do.`,
+    //siteUrl: `https://gatsby-starter-blog-demo.netlify.com/`,
+    //social: {
+      //twitter: `kylemathews`,
+    //},
   siteMetadata: {
-    title: `Gatsby Starter Blog`,
-    author: `Kyle Mathews`,
-    description: `A starter blog demonstrating what Gatsby can do.`,
-    siteUrl: `https://gatsby-starter-blog-demo.netlify.com/`,
+    title: siteConfig.name,
+    author: siteConfig.author,
+    description: siteConfig.description,
+    siteUrl: urljoin(siteConfig.url, siteConfig.prefix),
     social: {
-      twitter: `kylemathews`,
+      twitter: siteConfig.twitter,
     },
   },
   plugins: [
@@ -57,13 +68,21 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `Gatsby Starter Blog`,
-        short_name: `GatsbyJS`,
-        start_url: `/`,
+        //name: `Gatsby Starter Blog`,
+        //short_name: `GatsbyJS`,
+        //start_url: `/`,
+        //background_color: `#ffffff`,
+        //theme_color: `#663399`,
+        //display: `minimal-ui`,
+        //icon: `content/assets/gatsby-icon.png`,
+
+        name: siteConfig.name,
+        short_name: siteConfig.shortName,
+        start_url: siteConfig.prefix,
         background_color: `#ffffff`,
         theme_color: `#663399`,
         display: `minimal-ui`,
-        icon: `content/assets/gatsby-icon.png`,
+        icon: `content/assets/access.png`,
       },
     },
     `gatsby-plugin-offline`,
