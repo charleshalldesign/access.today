@@ -1,0 +1,74 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatDate } from '@/utils';
+
+export interface Props {
+  article: CollectionEntry<'articles'>;
+  showDescription?: boolean | undefined;
+}
+
+const { article, showDescription = false } = Astro.props;
+---
+
+<div class="article-metadata">
+  <time datetime={article.data.date.toISOString()}>
+    {formatDate(article.data.date)}
+  </time>
+  <span class="separator">•</span>
+  <span class="author">{article.data.author}</span>
+  {
+    article.data.draft && (
+      <>
+        <span class="separator">•</span>
+        <span class="draft-badge">Draft</span>
+      </>
+    )
+  }
+</div>
+{
+  showDescription && article.data.description && (
+    <p class="description">{article.data.description}</p>
+  )
+}
+
+<style>
+  .article-metadata {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-4);
+  }
+
+  .separator {
+    color: var(--color-text-muted);
+  }
+
+  .author {
+    font-weight: var(--font-weight-medium);
+  }
+
+  .draft-badge {
+    display: inline-block;
+    padding: var(--space-1) var(--space-2);
+    background: var(--color-status-warning-bg);
+    color: var(--color-status-warning-text);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .description {
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin-top: var(--space-2);
+  }
+
+  time {
+    color: var(--color-text-tertiary);
+  }
+</style>

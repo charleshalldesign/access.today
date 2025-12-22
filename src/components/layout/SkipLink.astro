@@ -1,0 +1,46 @@
+---
+// Skip link for keyboard navigation accessibility
+export interface Props {
+  href?: string;
+  text?: string;
+}
+
+const { href = '#main-content', text = 'Skip to main content' } = Astro.props;
+---
+
+<a href={href} class="skip-link">
+  {text}
+</a>
+
+<style>
+  .skip-link {
+    position: absolute;
+    top: calc(-1 * var(--space-10));
+    left: var(--space-2);
+    z-index: var(--z-skip-link);
+    padding: var(--space-2);
+    background: var(--color-bg-inverted);
+    color: var(--color-text-inverted);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .skip-link {
+      transition: top var(--duration-slow) var(--ease-default);
+    }
+  }
+
+  .skip-link:focus {
+    top: var(--space-2);
+  }
+
+  .skip-link:hover,
+  .skip-link:focus {
+    background: var(--color-neutral-700);
+    outline: var(--focus-ring-width) solid var(--color-text-inverted);
+    outline-offset: var(--focus-ring-offset);
+  }
+</style>

@@ -1,0 +1,229 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '@/layouts/Layout.astro';
+import StructuredData from '@/components/seo/StructuredData.astro';
+import ArticleMetadata from '@/components/article/ArticleMetadata.astro';
+
+// Generate a new path for every collection entry
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles.map(article => ({
+    params: { id: article.id },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+
+const frontmatter = {
+  title: article.data.title,
+  description: article.data.description,
+};
+---
+
+<Layout frontmatter={frontmatter}>
+  <StructuredData
+    slot="head"
+    type="article"
+    title={article.data.title}
+    description={article.data.description}
+    url={Astro.url.href}
+    image={article.data.coverImage}
+    datePublished={article.data.date.toISOString()}
+  />
+  <article class="article-page">
+    <header class="article-header">
+      {
+        article.data.coverImage && (
+          <img
+            src={article.data.coverImage}
+            alt={article.data.coverImageAlt || article.data.title}
+            class="cover-image"
+          />
+        )
+      }
+      <h1 class="article-title">{article.data.title}</h1>
+      <ArticleMetadata article={article} />
+    </header>
+    <div class="article-content">
+      <Content />
+    </div>
+    <footer class="article-footer">
+      <a href="/articles" class="back-link">← Back to all articles</a>
+    </footer>
+  </article>
+</Layout>
+
+<style>
+  .article-page {
+    max-width: var(--max-width-content);
+    padding-block: var(--space-12);
+  }
+
+  .article-header {
+    margin-bottom: var(--space-12);
+  }
+
+  .cover-image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-8);
+  }
+
+  .article-title {
+    font-size: var(--font-size-5xl);
+    font-weight: var(--font-weight-extrabold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-4) 0;
+  }
+
+  .article-content {
+    font-size: var(--font-size-lg);
+    line-height: var(--line-height-loose);
+    color: var(--color-text-secondary);
+  }
+
+  .article-content :global(h1),
+  .article-content :global(h2),
+  .article-content :global(h3),
+  .article-content :global(h4),
+  .article-content :global(h5),
+  .article-content :global(h6) {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-snug);
+    margin-top: var(--space-10);
+    margin-bottom: var(--space-4);
+  }
+
+  .article-content :global(h2) {
+    font-size: var(--font-size-3xl);
+    border-bottom: var(--border-width-thin) solid var(--color-border-primary);
+    padding-bottom: var(--space-2);
+  }
+
+  .article-content :global(h3) {
+    font-size: var(--font-size-2xl);
+  }
+
+  .article-content :global(p) {
+    margin: var(--space-6) 0;
+  }
+
+  .article-content :global(a) {
+    color: var(--color-text-link);
+    text-decoration: underline;
+  }
+
+  .article-content :global(a:hover) {
+    color: var(--color-text-link-hover);
+  }
+
+  .article-content :global(ul),
+  .article-content :global(ol) {
+    margin: var(--space-6) 0;
+    padding-left: var(--space-8);
+  }
+
+  .article-content :global(li) {
+    margin: var(--space-2) 0;
+  }
+
+  .article-content :global(pre) {
+    background: var(--color-bg-code-block);
+    color: var(--color-neutral-200);
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    margin: var(--space-6) 0;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-loose);
+  }
+
+  .article-content :global(code) {
+    background: var(--color-bg-code);
+    color: var(--color-text-code);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: 0.875em;
+    font-family: var(--font-family-mono);
+  }
+
+  .article-content :global(pre code) {
+    background: none;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  .article-content :global(blockquote) {
+    border-left: var(--border-width-thick) solid
+      var(--color-interactive-primary);
+    padding-left: var(--space-6);
+    margin: var(--space-6) 0;
+    color: var(--color-text-secondary);
+    font-style: italic;
+  }
+
+  .article-content :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    margin: var(--space-8) 0;
+  }
+
+  .article-footer {
+    margin-top: var(--space-16);
+    padding-top: var(--space-8);
+    border-top: var(--border-width-thin) solid var(--color-border-primary);
+  }
+
+  .back-link {
+    color: var(--color-interactive-primary);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    display: inline-flex;
+    align-items: center;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .back-link {
+      transition: var(--transition-colors);
+    }
+  }
+
+  .back-link:hover {
+    color: var(--color-interactive-primary-hover);
+    text-decoration: underline;
+  }
+
+  @media (max-width: 640px) {
+    .article-page {
+      padding: var(--space-8) var(--space-4);
+    }
+
+    .article-title {
+      font-size: var(--font-size-3xl);
+    }
+
+    .cover-image {
+      height: 250px;
+    }
+
+    .article-content {
+      font-size: var(--font-size-base);
+    }
+
+    .article-content :global(h2) {
+      font-size: var(--font-size-2xl);
+    }
+
+    .article-content :global(h3) {
+      font-size: var(--font-size-xl);
+    }
+  }
+</style>

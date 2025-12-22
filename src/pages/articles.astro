@@ -1,0 +1,74 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '@/layouts/Layout.astro';
+import ArticleCard from '@/components/article/ArticleCard.astro';
+import { getPublishedArticles } from '@/utils';
+
+const allArticles = await getCollection('articles');
+const articles = getPublishedArticles(allArticles);
+---
+
+<Layout title="Articles" description="Browse all articles and tutorials">
+  <div class="articles-page">
+    <header class="page-header">
+      <h1>Articles</h1>
+      <p class="subtitle">
+        Explore {articles.length}
+        {articles.length === 1 ? 'article' : 'articles'} about web development, programming,
+        and technology
+      </p>
+    </header>
+
+    {
+      articles.length === 0 ? (
+        <div class="no-articles">
+          <p>No articles published yet. Check back soon!</p>
+        </div>
+      ) : (
+        <div class="articles-grid">
+          {articles.map(article => (
+            <ArticleCard article={article} />
+          ))}
+        </div>
+      )
+    }
+  </div>
+</Layout>
+
+<style>
+  .articles-page {
+    padding-block: var(--space-responsive-lg);
+  }
+
+  .page-header {
+    margin-bottom: var(--space-8);
+  }
+
+  .page-header h1 {
+    color: var(--color-text-primary);
+  }
+
+  .subtitle {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-lg);
+    margin-top: var(--space-2);
+  }
+
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 640px) {
+    .articles-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .no-articles {
+    text-align: center;
+    padding: var(--space-section-gap) var(--space-4);
+    color: var(--color-text-secondary);
+  }
+</style>
