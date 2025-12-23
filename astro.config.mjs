@@ -4,13 +4,17 @@ import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
 import icon from 'astro-icon';
 
+import netlify from '@astrojs/netlify';
+
 // https://astro.build/config
 export default defineConfig({
   site: import.meta.env.PUBLIC_SITE_URL || 'http://localhost:4321',
   integrations: [sitemap(), mdx(), icon()],
+
   prefetch: {
     defaultStrategy: 'hover',
   },
+
   markdown: {
     shikiConfig: {
       themes: {
@@ -19,4 +23,6 @@ export default defineConfig({
       },
     },
   },
+
+  adapter: netlify(),
 });
