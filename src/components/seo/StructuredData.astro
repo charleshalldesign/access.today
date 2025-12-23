@@ -1,0 +1,77 @@
+---
+import { siteConfig } from '@/config/site';
+
+export interface Props {
+  type?: 'website' | 'article' | 'person' | 'organization' | undefined;
+  title?: string | undefined;
+  description?: string | undefined;
+  url?: string | undefined;
+  image?: string | undefined;
+  datePublished?: string | undefined;
+  dateModified?: string | undefined;
+}
+
+const {
+  type = 'website',
+  title = siteConfig.title,
+  description = siteConfig.description,
+  url = siteConfig.url,
+  image,
+  datePublished,
+  dateModified,
+} = Astro.props;
+
+// Create proper schema.org structured data
+const baseSchema = {
+  '@context': 'https://schema.org',
+  '@type':
+    type === 'website'
+      ? 'WebSite'
+      : type === 'article'
+        ? 'Article'
+        : type === 'person'
+          ? 'Person'
+          : type === 'organization'
+            ? 'Organization'
+            : 'WebSite',
+  name: title,
+  description: description,
+  url: url,
+  ...(image && { image: image }),
+};
+
+// Add type-specific properties
+const structuredData = {
+  ...baseSchema,
+  ...(type === 'website' && {
+    publisher: {
+      '@type': 'Person',
+      name: siteConfig.author,
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${url}/search?q={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  }),
+  ...(type === 'article' && {
+    headline: title,
+    author: {
+      '@type': 'Person',
+      name: siteConfig.author,
+    },
+    publisher: {
+      '@type': 'Person',
+      name: siteConfig.author,
+    },
+    ...(datePublished && { datePublished }),
+    ...(dateModified && { dateModified }),
+  }),
+};
+---
+
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify(structuredData)}
+  is:inline
+/>

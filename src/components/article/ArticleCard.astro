@@ -1,0 +1,95 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ArticleMetadata from './ArticleMetadata.astro';
+
+export interface Props {
+  article: CollectionEntry<'articles'>;
+}
+
+const { article } = Astro.props;
+const href = `/article/${article.id}`;
+---
+
+<article class="article-card">
+  <a href={href} class="card-link">
+    {
+      article.data.coverImage && (
+        <img
+          src={article.data.coverImage}
+          alt={article.data.title}
+          class="cover-image"
+          loading="lazy"
+        />
+      )
+    }
+    <div class="card-content">
+      <h2 class="title">{article.data.title}</h2>
+      <ArticleMetadata article={article} showDescription={true} />
+      <span class="read-more">Read more</span>
+    </div>
+  </a>
+</article>
+
+<style>
+  .article-card {
+    border: var(--border-width-thin) solid var(--color-border-primary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-bg-secondary);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .article-card {
+      transition:
+        var(--transition-all),
+        box-shadow var(--duration-normal) var(--ease-default);
+    }
+  }
+
+  .article-card:hover,
+  .article-card:focus-within {
+    border-color: var(--color-border-hover);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .cover-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .card-content {
+    padding: var(--space-6);
+  }
+
+  .title {
+    margin: 0 0 var(--space-3) 0;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-snug);
+  }
+
+  .card-link:hover .title {
+    color: var(--color-interactive-primary);
+  }
+
+  .read-more {
+    display: inline-block;
+    margin-top: var(--space-4);
+    color: var(--color-interactive-primary);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+  }
+
+  .card-link:hover .read-more {
+    text-decoration: underline;
+  }
+</style>

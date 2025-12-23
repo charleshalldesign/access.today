@@ -1,0 +1,132 @@
+---
+/**
+ * Theme Toggle Component
+ *
+ * Allows users to switch between light and dark modes.
+ * Persists preference in localStorage and respects system preferences.
+ */
+import { Icon } from 'astro-icon/components';
+
+export interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<button
+  class:list={['theme-toggle', className]}
+  type="button"
+  aria-label="Toggle dark mode"
+  data-theme-toggle
+>
+  <Icon name="lucide:sun" class="icon icon-sun" size={20} aria-hidden="true" />
+  <Icon
+    name="lucide:moon"
+    class="icon icon-moon"
+    size={20}
+    aria-hidden="true"
+  />
+</button>
+
+<script>
+  const toggle = document.querySelector('[data-theme-toggle]');
+
+  function getTheme(): 'light' | 'dark' {
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+      return localStorage.getItem('theme') as 'light' | 'dark';
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  }
+
+  function setTheme(theme: 'light' | 'dark') {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem('theme', theme);
+    updateAriaLabel(theme);
+  }
+
+  function updateAriaLabel(theme: 'light' | 'dark') {
+    toggle?.setAttribute(
+      'aria-label',
+      theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+    );
+  }
+
+  // Initialize
+  updateAriaLabel(getTheme());
+
+  toggle?.addEventListener('click', () => {
+    const currentTheme = getTheme();
+    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  });
+
+  // Listen for system preference changes
+  window
+    .matchMedia('(prefers-color-scheme: dark)')
+    .addEventListener('change', e => {
+      if (!localStorage.getItem('theme')) {
+        setTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+</script>
+
+<style>
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-secondary);
+    border: none;
+    cursor: pointer;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .theme-toggle {
+      transition: var(--transition-colors);
+    }
+  }
+
+  .theme-toggle:hover,
+  .theme-toggle:focus-visible {
+    background-color: var(--color-bg-hover);
+    color: var(--color-text-primary);
+  }
+
+  .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Show sun in dark mode, moon in light mode */
+  .icon-sun {
+    display: none;
+  }
+
+  .icon-moon {
+    display: block;
+  }
+
+  :global([data-theme='dark']) .icon-sun {
+    display: block;
+  }
+
+  :global([data-theme='dark']) .icon-moon {
+    display: none;
+  }
+
+  /* Also handle system preference when no explicit theme is set */
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .icon-sun {
+      display: block;
+    }
+
+    :global(:root:not([data-theme='light'])) .icon-moon {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,150 @@
+---
+title: Getting Started with Your Blog
+description: Learn how to create and publish your first blog post using this Astro template. A step-by-step guide to get you writing content quickly.
+date: 2025-12-21
+author: Daniel Henderson-Ede + Claude
+draft: false
+tags: ['tutorial', 'getting-started', 'guide']
+---
+
+# Getting Started with Your Blog
+
+Welcome! This template makes it easy to start blogging with Astro. You can write articles in Markdown or MDX, and they'll automatically appear on your site with full type safety and SEO optimization.
+
+## Quick Start: Creating Your First Post
+
+Follow these simple steps to create your first blog article:
+
+### 1. Create a New File
+
+Add a new `.mdx` or `.md` file in the `src/content/articles/` directory:
+
+```bash
+src/content/articles/my-first-post.mdx
+```
+
+### 2. Add Frontmatter
+
+Every article needs frontmatter with the following fields:
+
+```yaml
+---
+title: My First Blog Post
+description: A brief description that appears in article cards and SEO meta tags
+date: 2025-12-21
+author: Your Name
+draft: false
+tags: ['tutorial', 'example']
+coverImage: /images/my-cover.jpg  # Optional
+coverImageAlt: Description of cover image  # Optional
+---
+```
+
+**Required Fields:**
+- `title` - Your article title
+- `description` - Brief summary (used in SEO and article cards)
+- `date` - Publication date in YYYY-MM-DD format
+
+**Optional Fields:**
+- `author` - Defaults to "Anonymous" if not specified
+- `draft` - Set to `true` to hide the article (defaults to `false`)
+- `tags` - Array of tags for categorization (defaults to empty array)
+- `coverImage` - Path to cover image
+- `coverImageAlt` - Alt text for cover image
+
+### 3. Write Your Content
+
+After the frontmatter, write your article using Markdown or MDX:
+
+```markdown
+# My First Post
+
+Welcome to my blog! This is a paragraph with **bold** and *italic* text.
+
+## Features
+
+- Write in Markdown or MDX
+- Full TypeScript type safety
+- Automatic SEO optimization
+- Beautiful article pages
+
+## Code Examples
+
+You can include code blocks:
+
+```javascript
+const greeting = 'Hello, World!';
+console.log(greeting);
+```
+```
+
+### 4. Preview Your Article
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Your article will be available at:
+- Individual article: `http://localhost:4321/article/my-first-post`
+- Articles list: `http://localhost:4321/articles`
+
+### 5. Publish
+
+When ready to publish:
+
+1. Set `draft: false` in the frontmatter (or remove it, as false is the default)
+2. Commit and push your changes
+3. Build and deploy: `npm run build`
+
+## Working with Drafts
+
+Keep articles hidden while working on them:
+
+```yaml
+---
+title: Work in Progress
+description: This article is not ready yet
+date: 2025-12-21
+author: Your Name
+draft: true  # This article won't appear on the site
+tags: ['draft']
+---
+```
+
+## File Naming
+
+The filename becomes the URL slug:
+- `my-first-post.mdx` → `/article/my-first-post`
+- `getting-started.mdx` → `/article/getting-started`
+- `2025-review.mdx` → `/article/2025-review`
+
+Use lowercase and hyphens for best results.
+
+## Project Structure
+
+```
+src/
+├── content/
+│   ├── articles/          # Put your articles here!
+│   │   ├── my-first-post.mdx
+│   │   └── another-post.mdx
+│   └── config.ts          # Content schema (don't modify unless needed)
+├── pages/
+│   ├── article/
+│   │   └── [...id].astro  # Dynamic article page
+│   ├── articles.astro     # Article listing page
+│   └── index.astro        # Homepage
+└── components/
+    └── article/           # Article-related components
+```
+
+## Next Steps
+
+- Check out the [Content Collections guide](./content-collections-guide) for advanced features
+- Customize your site in `src/config/site.ts`
+- Add images to the `public/` directory
+- Explore MDX features for interactive content
+
+Happy blogging! 🚀

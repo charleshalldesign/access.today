@@ -1,0 +1,252 @@
+---
+title: Understanding Content Collections in This Template
+description: Learn how this template uses Astro's Content Collections to provide type-safe, validated blog content with automatic routing and SEO.
+date: 2025-12-21
+author: Daniel Henderson-Ede + Claude
+draft: false
+tags: ['astro', 'content-collections', 'typescript', 'advanced']
+---
+
+# Understanding Content Collections in This Template
+
+This template uses Astro's Content Collections to give you type-safe blog posts with automatic validation. Here's how everything works under the hood.
+
+## The Schema: What Fields Are Available?
+
+Open `src/content/config.ts` to see the article schema:
+
+```typescript
+import { defineCollection, z } from 'astro:content';
+
+const articlesCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    date: z.date(),
+    author: z.string().default('Anonymous'),
+    draft: z.boolean().default(false),
+    coverImage: z.string().optional(),
+    coverImageAlt: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+  }),
+});
+
+export const collections = {
+  articles: articlesCollection,
+};
+```
+
+This schema:
+- **Validates** your frontmatter at build time
+- **Provides TypeScript types** throughout your project
+- **Sets defaults** for optional fields
+- **Catches errors** before deployment
+
+## How Articles Become Pages
+
+The magic happens in `src/pages/article/[...id].astro`:
+
+```typescript
+import { getCollection, render } from 'astro:content';
+
+// Generate a route for every article
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles.map(article => ({
+    params: { id: article.id },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+```
+
+This:
+1. Gets all articles from the `articles` collection
+2. Creates a route for each one (e.g., `/article/my-post`)
+3. Renders the article content with your layout
+
+## Querying Articles Elsewhere
+
+You can query articles in any `.astro` file:
+
+```typescript
+import { getCollection } from 'astro:content';
+
+// Get all published articles
+const articles = await getCollection('articles', ({ data }) => {
+  return data.draft !== true;
+});
+
+// Sort by date (newest first)
+const sortedArticles = articles.sort((a, b) => 
+  b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+// Get recent articles
+const recentArticles = sortedArticles.slice(0, 5);
+```
+
+## Type Safety Benefits
+
+TypeScript knows your article structure:
+
+```typescript
+const article = articles[0];
+
+// ✅ TypeScript autocomplete works
+article.data.title      // string
+article.data.date       // Date
+article.data.tags       // string[]
+article.data.draft      // boolean
+
+// ❌ TypeScript catches errors
+article.data.invalid    // Error: Property 'invalid' does not exist
+article.data.date.foo() // Error: Property 'foo' does not exist on Date
+```
+
+## Adding New Fields
+
+Want to add new frontmatter fields? Edit `src/content/config.ts`:
+
+```typescript
+const articlesCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    date: z.date(),
+    author: z.string().default('Anonymous'),
+    draft: z.boolean().default(false),
+    coverImage: z.string().optional(),
+    coverImageAlt: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+    
+    // New fields:
+    featured: z.boolean().default(false),
+    category: z.enum(['tech', 'design', 'business']).optional(),
+    readingTime: z.number().optional(),
+  }),
+});
+```
+
+Then use them in your articles:
+
+```yaml
+---
+title: My Featured Post
+description: An important article
+date: 2025-12-21
+author: Your Name
+featured: true
+category: tech
+readingTime: 5
+---
+```
+
+## Content Rendering
+
+The template uses Astro's `render()` function to transform your MDX:
+
+```typescript
+import { render } from 'astro:content';
+
+const { Content } = await render(article);
+```
+
+This compiles your Markdown/MDX into a component:
+
+```astro
+<article>
+  <h1>{article.data.title}</h1>
+  <Content />  <!-- Your article content renders here -->
+</article>
+```
+
+## SEO and Structured Data
+
+The template automatically generates SEO meta tags from your article data:
+
+```astro
+<Layout frontmatter={frontmatter}>
+  <StructuredData
+    slot="head"
+    type="article"
+    title={article.data.title}
+    description={article.data.description}
+    url={Astro.url.href}
+    image={article.data.coverImage}
+    datePublished={article.data.date.toISOString()}
+  />
+</Layout>
+```
+
+This creates:
+- OpenGraph tags for social media sharing
+- Twitter Card metadata
+- Schema.org structured data for search engines
+
+## File Organization
+
+```
+src/content/
+├── config.ts              # Schema definition
+└── articles/              # Your articles
+    ├── getting-started.mdx
+    ├── my-post.mdx
+    └── another-post.mdx
+```
+
+**Tips:**
+- Keep all articles in `src/content/articles/`
+- Use descriptive filenames (they become URLs)
+- Group related articles with consistent tag naming
+
+## Build-Time Validation
+
+When you run `npm run build`, Astro validates all your articles:
+
+```bash
+✓ Build complete!
+✓ 15 articles validated
+```
+
+If there are errors:
+
+```bash
+❌ src/content/articles/my-post.mdx
+  - title: Required
+  - date: Expected date, received string
+```
+
+This catches mistakes before deployment!
+
+## Advanced: Multiple Collections
+
+You can add more collections beyond articles:
+
+```typescript
+const articlesCollection = defineCollection({ /* ... */ });
+const projectsCollection = defineCollection({ /* ... */ });
+const authorsCollection = defineCollection({ /* ... */ });
+
+export const collections = {
+  articles: articlesCollection,
+  projects: projectsCollection,
+  authors: authorsCollection,
+};
+```
+
+## Summary
+
+Content Collections in this template:
+- ✅ Validate your frontmatter automatically
+- ✅ Provide full TypeScript support
+- ✅ Generate routes automatically
+- ✅ Enable type-safe queries
+- ✅ Catch errors at build time
+- ✅ Improve SEO with structured data
+
+You don't need to modify any of this—just add `.mdx` files to `src/content/articles/` and everything works automatically! 🎉

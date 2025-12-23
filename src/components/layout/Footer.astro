@@ -1,0 +1,278 @@
+---
+import { siteConfig } from '@/config/site';
+import { Icon } from 'astro-icon/components';
+
+export interface Props {
+  showSocial?: boolean;
+  showNav?: boolean;
+  copyright?: string;
+}
+
+const {
+  showSocial = true,
+  showNav = true,
+  copyright = `© ${new Date().getFullYear()} ${siteConfig.name}. All rights reserved.`,
+} = Astro.props;
+
+type SocialLink = { name: string; url: string; icon: string };
+
+const socialLinks = [
+  siteConfig.social.github && {
+    name: 'GitHub',
+    url: `https://github.com/${siteConfig.social.github}`,
+    icon: 'lucide:github',
+  },
+  siteConfig.social.linkedin && {
+    name: 'LinkedIn',
+    url: `https://linkedin.com/in/${siteConfig.social.linkedin}`,
+    icon: 'lucide:linkedin',
+  },
+].filter((link): link is SocialLink => Boolean(link));
+---
+
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-content">
+      <!-- Branding section -->
+      <div class="footer-section footer-brand">
+        <a href="/" class="footer-logo">
+          {siteConfig.name}
+        </a>
+        <p class="footer-description">
+          {siteConfig.description}
+        </p>
+      </div>
+
+      <!-- Navigation section -->
+      {
+        showNav && siteConfig.nav.length > 0 && (
+          <div class="footer-section">
+            <h3 class="footer-heading">Navigation</h3>
+            <ul class="footer-links">
+              {siteConfig.nav.map(item => (
+                <li>
+                  <a href={item.href} class="footer-link">
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      <!-- Social section -->
+      {
+        showSocial && socialLinks.length > 0 && (
+          <div class="footer-section">
+            <h3 class="footer-heading">Connect</h3>
+            <ul class="footer-social">
+              {socialLinks.map(link => (
+                <li>
+                  <a
+                    href={link.url}
+                    class="footer-social-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Visit our ${link.name}`}
+                  >
+                    <Icon name={link.icon} size={20} aria-hidden="true" />
+                    <span>{link.name}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+
+    <!-- Bottom section -->
+    <div class="footer-bottom">
+      <p class="footer-copyright">{copyright}</p>
+      <p class="footer-credits">
+        Built with <a
+          href="https://astro.build"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="footer-link">Astro</a
+        >
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background-color: var(--color-bg-inverted);
+    color: var(--color-neutral-300);
+    margin-block-start: auto;
+  }
+
+  .footer-container {
+    max-inline-size: var(--max-width-container);
+    margin-inline: auto;
+    padding-block-start: var(--space-responsive-xl);
+    padding-block-end: var(--space-responsive-md);
+    padding-inline: var(--space-container-padding);
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+    gap: var(--space-responsive-xl);
+    margin-block-end: var(--space-responsive-lg);
+    padding-block-end: var(--space-responsive-lg);
+    border-block-end: var(--border-width-thin) solid
+      var(--color-border-inverted);
+  }
+
+  .footer-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-responsive-sm);
+  }
+
+  .footer-brand {
+    max-inline-size: 350px;
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: 48rem) {
+    .footer-content {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+
+    .footer-brand {
+      grid-column: auto;
+    }
+  }
+
+  .footer-logo {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-inverted);
+    text-decoration: none;
+    display: inline-block;
+    margin-block-end: var(--space-2);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .footer-logo {
+      transition: var(--transition-colors);
+    }
+  }
+
+  .footer-logo:hover,
+  .footer-logo:focus {
+    color: var(--color-interactive-secondary);
+  }
+
+  .footer-description {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+    color: var(--color-neutral-400);
+    margin: 0;
+  }
+
+  .footer-heading {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-inverted);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    margin-block-start: 0;
+    margin-block-end: var(--space-3);
+    margin-inline: 0;
+  }
+
+  .footer-links,
+  .footer-social {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .footer-link {
+    color: var(--color-neutral-300);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    display: inline-block;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .footer-link {
+      transition: var(--transition-colors);
+    }
+  }
+
+  .footer-link:hover,
+  .footer-link:focus {
+    color: var(--color-interactive-secondary);
+  }
+
+  .footer-social-link {
+    color: var(--color-neutral-300);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .footer-social-link {
+      transition: var(--transition-colors);
+    }
+  }
+
+  .footer-social-link:hover,
+  .footer-social-link:focus {
+    color: var(--color-interactive-secondary);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-responsive-sm);
+    padding-block-start: var(--space-responsive-sm);
+  }
+
+  .footer-copyright,
+  .footer-credits {
+    font-size: var(--font-size-sm);
+    color: var(--color-neutral-400);
+    margin: 0;
+  }
+
+  .footer-credits a {
+    color: var(--color-interactive-secondary);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .footer-credits a {
+      transition: var(--transition-colors);
+    }
+  }
+
+  .footer-credits a:hover,
+  .footer-credits a:focus {
+    color: var(--color-interactive-secondary-hover);
+  }
+
+  /* Mobile adjustment */
+  @media (max-width: 30rem) {
+    .footer-bottom {
+      flex-direction: column;
+      text-align: center;
+      gap: var(--space-2);
+    }
+  }
+</style>

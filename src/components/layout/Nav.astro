@@ -1,0 +1,431 @@
+---
+import { siteConfig } from '@/config/site';
+import ThemeToggle from './ThemeToggle.astro';
+
+export interface Props {
+  activePathname?: string;
+  showLogo?: boolean;
+  variant?: 'default' | 'minimal';
+}
+
+const {
+  activePathname = Astro.url.pathname,
+  showLogo = true,
+  variant = 'default',
+} = Astro.props;
+
+const normalizedPath = activePathname.endsWith('/')
+  ? activePathname.slice(0, -1)
+  : activePathname;
+
+const isActive = (href: string) => {
+  const normalizedHref = href.endsWith('/') ? href.slice(0, -1) : href;
+  if (normalizedHref === '') return normalizedPath === '';
+  return normalizedPath === normalizedHref;
+};
+---
+
+<nav aria-label="Main navigation" class:list={['nav', variant]}>
+  <div class="nav-container">
+    {
+      showLogo && (
+        <a href="/" class="nav-logo" aria-label="Home">
+          {siteConfig.name}
+        </a>
+      )
+    }
+
+    <!-- Desktop menu -->
+    <ul class="nav-menu nav-menu-desktop">
+      {
+        siteConfig.nav.map(item => (
+          <li class="nav-item">
+            <a
+              href={item.href}
+              class:list={['nav-link', { active: isActive(item.href) }]}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="nav-actions">
+      <ThemeToggle />
+      <!-- Mobile menu toggle -->
+      <button
+        class="nav-toggle"
+        aria-label="Open navigation menu"
+        data-nav-toggle
+      >
+        <span class="nav-toggle-icon"></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile menu dialog -->
+<dialog class="nav-dialog" id="nav-dialog" aria-label="Navigation menu">
+  <div class="nav-dialog-header">
+    <div class="nav-dialog-spacer"></div>
+    <button class="nav-dialog-close" aria-label="Close navigation menu">
+      <span class="nav-dialog-close-icon"></span>
+    </button>
+  </div>
+  <ul class="nav-menu nav-menu-mobile">
+    {
+      siteConfig.nav.map(item => (
+        <li class="nav-item">
+          <a
+            href={item.href}
+            class:list={['nav-link', { active: isActive(item.href) }]}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</dialog>
+
+<script>
+  // Progressive enhancement for mobile menu with HTML Dialog
+  const dialog = document.getElementById('nav-dialog') as HTMLDialogElement;
+  const navToggle = document.querySelector('[data-nav-toggle]');
+  const closeButton = document.querySelector('.nav-dialog-close');
+  const navLinks = dialog?.querySelectorAll('.nav-link');
+
+  function openMenu() {
+    if (!dialog) return;
+    dialog.showModal();
+  }
+
+  function closeMenu() {
+    if (!dialog) return;
+    dialog.close();
+  }
+
+  // Open dialog on toggle click
+  navToggle?.addEventListener('click', openMenu);
+
+  // Close dialog on close button click
+  closeButton?.addEventListener('click', closeMenu);
+
+  // Close dialog when clicking backdrop (outside dialog content)
+  dialog?.addEventListener('click', e => {
+    const rect = dialog.getBoundingClientRect();
+    const isInDialog =
+      rect.top <= e.clientY &&
+      e.clientY <= rect.top + rect.height &&
+      rect.left <= e.clientX &&
+      e.clientX <= rect.left + rect.width;
+
+    if (!isInDialog) {
+      closeMenu();
+    }
+  });
+
+  // Close dialog when clicking a nav link
+  navLinks?.forEach(link => {
+    link.addEventListener('click', closeMenu);
+  });
+
+  // Dialog handles Escape key and focus trap automatically!
+</script>
+
+<style>
+  .nav {
+    background-color: var(--color-bg-secondary);
+    border-block-end: var(--border-width-thin) solid var(--color-border-primary);
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--z-sticky);
+  }
+
+  .nav-container {
+    max-inline-size: var(--max-width-container);
+    margin-inline: auto;
+    padding-block: var(--space-responsive-sm);
+    padding-inline: var(--space-container-padding);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: clamp(var(--space-4), 3vw, var(--space-8));
+  }
+
+  .nav-logo {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .nav-logo {
+      transition: var(--transition-colors);
+    }
+  }
+
+  .nav-logo:hover,
+  .nav-logo:focus {
+    color: var(--color-interactive-primary);
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding-block: var(--space-2);
+    padding-inline: var(--space-2);
+    position: relative;
+    inline-size: 40px;
+    block-size: 40px;
+  }
+
+  .nav-toggle-icon,
+  .nav-toggle-icon::before,
+  .nav-toggle-icon::after {
+    display: block;
+    inline-size: 24px;
+    block-size: 2px;
+    background-color: var(--color-text-primary);
+    position: absolute;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+  }
+
+  .nav-toggle-icon {
+    inset-block-start: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .nav-toggle-icon::before,
+  .nav-toggle-icon::after {
+    content: '';
+  }
+
+  .nav-toggle-icon::before {
+    inset-block-start: -8px;
+  }
+
+  .nav-toggle-icon::after {
+    inset-block-start: 8px;
+  }
+
+  .nav-menu {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: clamp(var(--space-1), 1vw, var(--space-2));
+    align-items: center;
+    flex: 1;
+    justify-content: flex-end;
+  }
+
+  .nav-menu-mobile {
+    display: none;
+  }
+
+  .nav-item {
+    margin: 0;
+  }
+
+  .nav-link {
+    display: block;
+    padding-block: var(--space-2);
+    padding-inline: clamp(var(--space-3), 2vw, var(--space-4));
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-base);
+    border-radius: var(--radius-md);
+    position: relative;
+    white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .nav-link {
+      transition: var(--transition-all);
+    }
+  }
+
+  .nav-link:hover,
+  .nav-link:focus {
+    color: var(--color-interactive-primary);
+    background-color: var(--color-bg-hover);
+  }
+
+  .nav-link.active {
+    color: var(--color-interactive-primary);
+    background-color: var(--color-bg-active);
+  }
+
+  /* Minimal variant */
+  .nav.minimal {
+    background-color: transparent;
+    border-block-end: none;
+  }
+
+  /* Dialog (mobile menu) */
+  .nav-dialog {
+    border: none;
+    padding: 0;
+    inline-size: 100%;
+    max-inline-size: 100%;
+    block-size: 100dvh;
+    max-block-size: 100dvh;
+    margin: 0;
+    inset: 0;
+    background-color: var(--color-bg-secondary);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .nav-dialog {
+      animation: fadeIn var(--duration-normal) var(--ease-default);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .nav-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .nav-dialog::backdrop {
+      animation: backdropFadeIn var(--duration-normal);
+    }
+  }
+
+  @keyframes backdropFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .nav-dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: var(--space-responsive-sm);
+    padding-inline: var(--space-container-padding);
+    border-block-end: var(--border-width-thin) solid var(--color-border-primary);
+  }
+
+  .nav-dialog-spacer {
+    /* Matches the logo space to keep close button aligned to the right */
+    inline-size: auto;
+  }
+
+  .nav-dialog-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding-block: var(--space-2);
+    padding-inline: var(--space-2);
+    inline-size: 40px;
+    block-size: 40px;
+    position: relative;
+    border-radius: var(--radius-md);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .nav-dialog-close {
+      transition: background-color var(--duration-normal) var(--ease-default);
+    }
+  }
+
+  .nav-dialog-close:hover,
+  .nav-dialog-close:focus {
+    background-color: var(--color-bg-hover);
+  }
+
+  .nav-dialog-close-icon,
+  .nav-dialog-close-icon::before {
+    display: block;
+    inline-size: 24px;
+    block-size: 2px;
+    background-color: var(--color-text-primary);
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+  }
+
+  .nav-dialog-close-icon {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .nav-dialog-close-icon::before {
+    content: '';
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+
+  .nav-menu-mobile {
+    display: flex;
+    flex-direction: column;
+    padding-block: var(--space-responsive-lg);
+    padding-inline: var(--space-container-padding);
+    gap: var(--space-2);
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .nav-menu-mobile .nav-item {
+    inline-size: 100%;
+    max-inline-size: 100%;
+  }
+
+  .nav-menu-mobile .nav-link {
+    display: block;
+    padding-block: clamp(var(--space-4), 3vh, var(--space-5));
+    padding-inline: clamp(var(--space-4), 3vw, var(--space-6));
+    border-radius: var(--radius-lg);
+    border-block-end: none;
+    font-size: var(--font-size-xl);
+    text-align: center;
+  }
+
+  .nav-menu-mobile .nav-link:hover,
+  .nav-menu-mobile .nav-link:focus {
+    background-color: var(--color-bg-hover);
+  }
+
+  .nav-menu-mobile .nav-link.active {
+    background-color: var(--color-bg-active);
+  }
+
+  /* Mobile/tablet - content-driven breakpoint */
+  @media (max-width: 48rem) {
+    .nav-toggle {
+      display: block;
+    }
+
+    .nav-menu-desktop {
+      display: none;
+    }
+  }
+</style>

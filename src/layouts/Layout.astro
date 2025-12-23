@@ -1,0 +1,78 @@
+---
+import { siteConfig } from '@/config/site';
+import SkipLink from '@/components/layout/SkipLink.astro';
+import Nav from '@/components/layout/Nav.astro';
+import Footer from '@/components/layout/Footer.astro';
+import '@/styles/global.css';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  frontmatter?: {
+    pageTitle?: string;
+    title?: string;
+    description?: string;
+    [key: string]: any;
+  };
+}
+
+const { title, description, frontmatter } = Astro.props;
+
+// Support both direct props and frontmatter object
+const pageTitle =
+  frontmatter?.pageTitle || frontmatter?.title || title
+    ? `${frontmatter?.title || title} | ${siteConfig.name}`
+    : siteConfig.title;
+const pageDescription =
+  frontmatter?.description || description || siteConfig.description;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="view-transition" content="same-origin" />
+    <meta name="description" content={pageDescription} />
+    <meta
+      name="theme-color"
+      content="#000000"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#0f172a"
+      media="(prefers-color-scheme: dark)"
+    />
+    <title>{pageTitle}</title>
+    <!-- Prevent flash of unstyled content on theme -->
+    <script is:inline>
+      const theme = (() => {
+        if (
+          typeof localStorage !== 'undefined' &&
+          localStorage.getItem('theme')
+        ) {
+          return localStorage.getItem('theme');
+        }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light';
+      })();
+      document.documentElement.dataset.theme = theme;
+    </script>
+    <slot name="head" />
+  </head>
+  <body>
+    <header>
+      <SkipLink />
+      <Nav />
+    </header>
+    <main id="main-content" role="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

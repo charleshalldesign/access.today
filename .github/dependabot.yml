@@ -1,0 +1,78 @@
+version: 2
+updates:
+  # npm dependencies - security-first approach for template stability
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+      time: '02:00'
+      timezone: 'UTC'
+    target-branch: 'main'
+    open-pull-requests-limit: 5
+    allow:
+      # Conservative approach: security, patch, and minor only
+      - dependency-type: 'direct'
+        update-types:
+          [
+            'security',
+            'version-update:semver-patch',
+            'version-update:semver-minor',
+          ]
+      - dependency-type: 'indirect'
+        update-types: ['security']
+    commit-message:
+      prefix: 'deps'
+      prefix-development: 'deps-dev'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'auto-update'
+    groups:
+      # Group Astro ecosystem updates together
+      astro-core:
+        patterns:
+          - 'astro'
+          - '@astrojs/*'
+        update-types:
+          - 'minor'
+          - 'patch'
+      # Group development tools for easier review
+      development-tools:
+        patterns:
+          - 'eslint*'
+          - 'prettier*'
+          - '@typescript-eslint/*'
+          - 'husky'
+          - 'lint-staged'
+        update-types:
+          - 'minor'
+          - 'patch'
+      # Group TypeScript ecosystem
+      typescript-ecosystem:
+        patterns:
+          - 'typescript'
+          - '@types/*'
+        update-types:
+          - 'minor'
+          - 'patch'
+    ignore:
+      # Require manual review for major version updates to maintain template stability
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+
+  # GitHub Actions dependencies - weekly updates
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '02:00'
+      timezone: 'UTC'
+    target-branch: 'main'
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: 'ci'
+      include: 'scope'
+    labels:
+      - 'github-actions'
+      - 'ci'

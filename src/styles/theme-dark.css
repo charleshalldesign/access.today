@@ -1,0 +1,138 @@
+/**
+ * Dark Theme
+ * 
+ * Semantic color tokens for dark mode.
+ * Applied when user has dark mode preference or explicitly selects dark theme.
+ */
+
+/* Automatic dark mode based on system preference */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    /* ========================================
+     * BACKGROUNDS
+     * ======================================== */
+    --color-bg-primary: var(--color-neutral-950);
+    --color-bg-secondary: var(--color-neutral-900);
+    --color-bg-tertiary: var(--color-neutral-800);
+    --color-bg-inverted: var(--color-neutral-900);
+    --color-bg-hover: var(--color-neutral-800);
+    --color-bg-active: var(--color-neutral-800);
+    --color-bg-code: var(--color-neutral-800);
+    --color-bg-code-block: var(--color-neutral-900);
+
+    /* ========================================
+     * TEXT
+     * ======================================== */
+    --color-text-primary: var(--color-neutral-50);
+    --color-text-secondary: var(--color-neutral-300);
+    --color-text-tertiary: var(--color-neutral-400);
+    --color-text-inverted: var(--color-neutral-50);
+    --color-text-muted: var(--color-neutral-500);
+    --color-text-link: var(--color-primary-400);
+    --color-text-link-hover: var(--color-primary-300);
+    --color-text-code: #f472b6;
+
+    /* ========================================
+     * BORDERS
+     * ======================================== */
+    --color-border-primary: var(--color-neutral-700);
+    --color-border-secondary: var(--color-neutral-600);
+    --color-border-focus: var(--color-primary-500);
+    --color-border-hover: var(--color-primary-500);
+    --color-border-inverted: var(--color-neutral-200);
+
+    /* ========================================
+     * INTERACTIVE
+     * ======================================== */
+    --color-interactive-primary: var(--color-primary-300);
+    --color-interactive-primary-hover: var(--color-primary-200);
+    --color-interactive-secondary: var(--color-primary-300);
+    --color-interactive-secondary-hover: var(--color-primary-300);
+
+    /* ========================================
+     * STATUS
+     * ======================================== */
+    --color-status-warning-bg: var(--color-accent-800);
+    --color-status-warning-text: var(--color-accent-100);
+    --color-status-error-bg: #450a0a;
+    --color-status-error-text: #fecaca;
+
+    /* ========================================
+     * SHADOWS (more subtle in dark mode)
+     * ======================================== */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+
+    /* ========================================
+     * FOCUS RING
+     * ======================================== */
+    --focus-ring-color: var(--color-primary-500);
+  }
+}
+
+/* Manual dark mode override */
+[data-theme='dark'] {
+  /* ========================================
+   * BACKGROUNDS
+   * ======================================== */
+  --color-bg-primary: var(--color-neutral-950);
+  --color-bg-secondary: var(--color-neutral-900);
+  --color-bg-tertiary: var(--color-neutral-800);
+  --color-bg-inverted: var(--color-neutral-900);
+  --color-bg-hover: var(--color-neutral-800);
+  --color-bg-active: var(--color-neutral-800);
+  --color-bg-code: var(--color-neutral-800);
+  --color-bg-code-block: var(--color-neutral-900);
+
+  /* ========================================
+   * TEXT
+   * ======================================== */
+  --color-text-primary: var(--color-neutral-50);
+  --color-text-secondary: var(--color-neutral-300);
+  --color-text-tertiary: var(--color-neutral-400);
+  --color-text-inverted: var(--color-neutral-50);
+  --color-text-muted: var(--color-neutral-500);
+  --color-text-link: var(--color-primary-400);
+  --color-text-link-hover: var(--color-primary-300);
+  --color-text-code: #f472b6;
+
+  /* ========================================
+   * BORDERS
+   * ======================================== */
+  --color-border-primary: var(--color-neutral-700);
+  --color-border-secondary: var(--color-neutral-600);
+  --color-border-focus: var(--color-primary-400);
+  --color-border-hover: var(--color-primary-500);
+  --color-border-inverted: var(--color-neutral-200);
+
+  /* ========================================
+   * INTERACTIVE
+   * ======================================== */
+  --color-interactive-primary: var(--color-primary-300);
+  --color-interactive-primary-hover: var(--color-primary-400);
+  --color-interactive-secondary: var(--color-primary-400);
+  --color-interactive-secondary-hover: var(--color-primary-300);
+
+  /* ========================================
+   * STATUS
+   * ======================================== */
+  --color-status-warning-bg: var(--color-accent-800);
+  --color-status-warning-text: var(--color-accent-100);
+  --color-status-error-bg: #450a0a;
+  --color-status-error-text: #fecaca;
+
+  /* ========================================
+   * SHADOWS
+   * ======================================== */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+
+  /* ========================================
+   * FOCUS RING
+   * ======================================== */
+  --focus-ring-color: var(--color-primary-500);
+}
